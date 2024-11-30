@@ -19,6 +19,7 @@ import java.util.Optional;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
+    private final WebClient.Builder webClientBuilder;
 
     @Override
     public void createProduct(ProductDTO productDTO) {
@@ -39,11 +40,10 @@ public class ProductServiceImpl implements ProductService {
     public ProductDTO getProduct(Long id) {
         log.info("Product id: {}", id);
         Optional<Product> productOptional = productRepository.findById(id);
-        WebClient webClient = WebClient.create("http://localhost:8082");
         ProductDTO productDTO = new ProductDTO();
         if (productOptional.isPresent()) {
             Product product = productOptional.get();
-            InventoryDTO inventoryDTO = webClient.get().uri("/v1/api/inventory/"+product.getSkuCode()).retrieve().bodyToMono(InventoryDTO.class).block();
+            InventoryDTO inventoryDTO = webClientBuilder.build().get().uri("http://inventory-service/v1/api/inventory/"+product.getSkuCode()).retrieve().bodyToMono(InventoryDTO.class).block();
             log.info("Inventory DTO: {}", inventoryDTO);
             BeanUtils.copyProperties(product, productDTO);
             productDTO.setQuantity(inventoryDTO.getQuantity());
