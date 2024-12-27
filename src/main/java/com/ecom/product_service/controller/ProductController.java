@@ -8,6 +8,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Rest controller
+ * Keep all the REST end points in this controller
+ */
+
 @RestController
 @RequestMapping("/v1/api/product")
 @RequiredArgsConstructor
